@@ -284,12 +284,18 @@
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // ============================================================
-    //  Куда прилетает ответ.
-    //  По умолчанию — в Google-форму (тихо, в фоне, гостья ничего
-    //  не видит). Поле формы: entry.1156984750
+    //  Куда прилетает ответ. Отправляется во ВСЕ каналы сразу —
+    //  какой-нибудь да сработает.
+    //
+    //  1) Google-форма (поле entry.1156984750)
+    //  2) ntfy.sh — пуш на телефон + история на странице.
+    //     Подпишись: открой https://ntfy.sh/abizyana-gulyat-a8b3f1c9
+    //     на телефоне (или в приложении ntfy). Тему можно поменять
+    //     здесь на любую свою — просто подпишись на такую же.
     // ============================================================
     var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfjRPwbgBthYb7Z05QG1FYKV4Ae21kIXonZvox-UHOJ4uHLQA/formResponse";
     var FIELD = "entry.1156984750";
+    var NTFY_TOPIC = "abizyana-gulyat-a8b3f1c9";
 
     // --- ambient hearts + monkeys ---
     var sky = document.getElementById("sky");
@@ -357,6 +363,21 @@
       try {
         (new Image()).src = FORM + "?" + FIELD + "=" +
           encodeURIComponent(text) + "&submit=Submit&t=" + Date.now();
+      } catch (e) {}
+      // 4) ntfy.sh — независимый канал: пуш на телефон + история.
+      //    (заголовки HTTP только латиницей, поэтому кириллица — в теле)
+      try {
+        if (NTFY_TOPIC) {
+          fetch("https://ntfy.sh/" + NTFY_TOPIC, {
+            method: "POST",
+            body: "Абизяна ответила: " + text,
+            headers: { "Title": "walk invite", "Tags": "monkey,tulip" }
+          });
+        }
+      } catch (e) {}
+      // 5) локальная копия в браузере гостьи (крайний случай)
+      try {
+        localStorage.setItem("walk_answer", text + " @ " + new Date().toISOString());
       } catch (e) {}
     }
 
