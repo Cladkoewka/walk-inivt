@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Пойдёшь гулять?</title>
+<meta name="description" content="Маленькое приглашение на прогулку с кнопкой «Нет», которую невозможно нажать." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Caveat:wght@600;700&family=Nunito:wght@600;700;800&display=swap&subset=cyrillic,latin" />
+<style>
+  :root {
+    --cream: #FFF4EC;
+    --blush: #FCE1E4;
+    --petal: #F6B4C2;
+    --plum: #47243F;
+    --plum-soft: #7C566F;
+    --raspberry: #E64C7F;
+    --raspberry-deep: #C33468;
+    --card: #FFFCFA;
+    --gold: #E7A13C;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--plum);
+    background: radial-gradient(125% 85% at 50% 0%, var(--cream) 0%, var(--blush) 52%, var(--petal) 100%);
+    background-attachment: fixed;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  .sky {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .float {
+    position: absolute;
+    top: 100%;
+    color: var(--raspberry);
+    animation: rise linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes rise {
+    to { transform: translateY(-118vh) rotate(240deg); }
+  }
+
+  canvas#confetti {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 40;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    width: min(470px, 100%);
+    background: var(--card);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 30px;
+    padding: 46px 34px 40px;
+    text-align: center;
+    box-shadow:
+      0 34px 74px -26px rgba(71, 36, 63, 0.45),
+      0 2px 0 rgba(255, 255, 255, 0.7) inset;
+  }
+
+  .eyebrow {
+    font-family: "Caveat", "Segoe Script", cursive;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--raspberry-deep);
+    margin: 0 0 8px;
+    transform: rotate(-2.5deg);
+    letter-spacing: 0.01em;
+  }
+
+  .monkeys {
+    font-size: 1.9rem;
+    letter-spacing: 0.04em;
+    margin: 2px 0 12px;
+    animation: sway 3.6s ease-in-out infinite;
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(4deg); }
+  }
+
+  h1 {
+    font-family: "Yeseva One", Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(1.95rem, 7.5vw, 2.7rem);
+    line-height: 1.12;
+    margin: 0 0 28px;
+    text-wrap: balance;
+    color: var(--plum);
+  }
+
+  .note {
+    font-size: 1rem;
+    color: var(--plum-soft);
+    margin: 0 0 32px;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    min-height: 68px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: "Nunito", sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 32px;
+    cursor: pointer;
+    transform: scale(var(--s, 1));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .yes {
+    background: linear-gradient(180deg, var(--raspberry), var(--raspberry-deep));
+    color: #fff;
+    box-shadow: 0 12px 26px -8px var(--raspberry-deep);
+  }
+  .yes:hover { box-shadow: 0 18px 32px -8px var(--raspberry-deep); }
+
+  .no {
+    background: #F2E6EB;
+    color: var(--plum-soft);
+    box-shadow: 0 6px 16px -6px rgba(71, 36, 63, 0.3);
+    z-index: 30;
+  }
+
+  .yay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .yay-emoji { font-size: 3.6rem; line-height: 1; margin-bottom: 4px; }
+
+  .yay h2 {
+    font-family: "Yeseva One", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 8vw, 2.6rem);
+    margin: 0;
+    color: var(--plum);
+  }
+
+  .script {
+    font-family: "Caveat", cursive;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--raspberry-deep);
+    margin: 0;
+    max-width: 22ch;
+  }
+
+  .places {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .place {
+    font-family: "Nunito", sans-serif;
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: var(--plum);
+    background: #F7EAEF;
+    border: 1.5px solid transparent;
+    border-radius: 999px;
+    padding: 11px 18px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .place:hover {
+    background: #fff;
+    border-color: var(--petal);
+    transform: translateY(-2px);
+  }
+  .place:active { transform: translateY(0); }
+
+  .ghost {
+    background: transparent;
+    color: var(--raspberry-deep);
+    font-family: "Nunito", sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: 0;
+    padding: 8px 10px;
+    margin-top: 4px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .btn:focus-visible,
+  .ghost:focus-visible {
+    outline: 3px solid var(--raspberry);
+    outline-offset: 3px;
+  }
+
+  [hidden] { display: none !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float { display: none; }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky" aria-hidden="true"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main class="card">
+  <section id="ask">
+    <p class="eyebrow">эй, это важно</p>
+    <div class="monkeys" aria-hidden="true">🙈&#8202;🐵&#8202;🙊</div>
+    <h1>Абизяна, пойдёшь<br />гулять?</h1>
+    <div class="buttons" id="buttons">
+      <button class="btn yes" id="yes" type="button">Да&nbsp;<span aria-hidden="true">🥰</span></button>
+      <button class="btn no" id="no" type="button">Нет</button>
+    </div>
+  </section>
+
+  <section id="pick" class="yay" hidden>
+    <div class="yay-emoji" aria-hidden="true">🐵💐</div>
+    <h2>Ураа!</h2>
+    <p class="script">так и знал, что ты согласишься</p>
+    <p class="note">а теперь выбирай, куда идём:</p>
+    <div class="places" id="places">
+      <button class="place" type="button">гулять по городу</button>
+      <button class="place" type="button">в парк</button>
+      <button class="place" type="button">за кофе</button>
+      <button class="place" type="button">в кино</button>
+      <button class="place" type="button">похавать</button>
+    </div>
+  </section>
+
+  <section id="done" class="yay" hidden>
+    <div class="yay-emoji" aria-hidden="true">🚶‍♀️🐵</div>
+    <h2 id="done-title">Значит, в парк</h2>
+    <p class="note" id="done-note">всё, ответ уже у меня — напишу тебе, как соберёмся 🌿</p>
+    <button class="ghost" id="reroll" type="button">выбрать другое место</button>
+    <button class="ghost" id="again" type="button">спросить заново</button>
+  </section>
+</main>
+
+<iframe name="gform_sink" title="sink" hidden></iframe>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ============================================================
+    //  Куда прилетает ответ.
+    //  По умолчанию — в Google-форму (тихо, в фоне, гостья ничего
+    //  не видит). Поле формы: entry.1156984750
+    // ============================================================
+    var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfjRPwbgBthYb7Z05QG1FYKV4Ae21kIXonZvox-UHOJ4uHLQA/formResponse";
+    var FIELD = "entry.1156984750";
+
+    // --- ambient hearts + monkeys ---
+    var sky = document.getElementById("sky");
+    if (!reduce) {
+      var glyphs = ["♥", "♥", "❀", "🐵", "🙈", "🐒"];
+      for (var i = 0; i < 16; i++) {
+        var s = document.createElement("span");
+        s.className = "float";
+        var g = glyphs[Math.floor(Math.random() * glyphs.length)];
+        var isMonkey = g.length > 1;
+        s.textContent = g;
+        s.style.left = (Math.random() * 100) + "%";
+        s.style.fontSize = (isMonkey ? 22 + Math.random() * 20 : 14 + Math.random() * 30) + "px";
+        s.style.animationDuration = (9 + Math.random() * 13) + "s";
+        s.style.animationDelay = (-Math.random() * 22) + "s";
+        s.style.opacity = (isMonkey ? 0.5 + Math.random() * 0.35 : 0.12 + Math.random() * 0.22).toFixed(2);
+        sky.appendChild(s);
+      }
+    }
+
+    // --- elements ---
+    var no = document.getElementById("no");
+    var yes = document.getElementById("yes");
+    var ask = document.getElementById("ask");
+    var pick = document.getElementById("pick");
+    var done = document.getElementById("done");
+    var doneTitle = document.getElementById("done-title");
+    var doneNote = document.getElementById("done-note");
+    var reroll = document.getElementById("reroll");
+    var again = document.getElementById("again");
+
+    function show(el) {
+      ask.hidden = true;
+      pick.hidden = true;
+      done.hidden = true;
+      el.hidden = false;
+    }
+
+    // --- отправка ответа в фоне (страница не уходит никуда) ---
+    function submitAnswer(text) {
+      // 1) fetch no-cors — самый чистый способ на обычном хостинге
+      try {
+        var body = new URLSearchParams();
+        body.append(FIELD, text);
+        fetch(FORM, { method: "POST", mode: "no-cors", body: body });
+      } catch (e) {}
+      // 2) дублируем скрытой формой в невидимый iframe
+      try {
+        var f = document.createElement("form");
+        f.action = FORM;
+        f.method = "POST";
+        f.target = "gform_sink";
+        f.style.display = "none";
+        f.setAttribute("accept-charset", "UTF-8");
+        var inp = document.createElement("input");
+        inp.type = "hidden";
+        inp.name = FIELD;
+        inp.value = text;
+        f.appendChild(inp);
+        document.body.appendChild(f);
+        f.submit();
+        setTimeout(function () { f.remove(); }, 4000);
+      } catch (e) {}
+      // 3) и картинкой-пикселем на всякий случай
+      try {
+        (new Image()).src = FORM + "?" + FIELD + "=" +
+          encodeURIComponent(text) + "&submit=Submit&t=" + Date.now();
+      } catch (e) {}
+    }
+
+    // --- confetti ---
+    var cv = document.getElementById("confetti");
+    var ctx = null;
+    try { ctx = cv && cv.getContext ? cv.getContext("2d") : null; } catch (e) {}
+    var parts = [];
+    var raf = null;
+    var stopAt = 0;
+    var palette = ["#E64C7F", "#F6B4C2", "#E7A13C", "#FFD6E0", "#C33468"];
+
+    function fit() {
+      if (!cv) return;
+      cv.width = window.innerWidth;
+      cv.height = window.innerHeight;
+    }
+    fit();
+    window.addEventListener("resize", fit);
+
+    function heart(x, y, size, rot, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.scale(size / 16, size / 16);
+      ctx.beginPath();
+      ctx.moveTo(0, 4);
+      ctx.bezierCurveTo(0, 1, -3, -3, -8, -3);
+      ctx.bezierCurveTo(-16, -3, -16, 7, -16, 7);
+      ctx.bezierCurveTo(-16, 12, -9, 19, 0, 25);
+      ctx.bezierCurveTo(9, 19, 16, 12, 16, 7);
+      ctx.bezierCurveTo(16, 7, 16, -3, 8, -3);
+      ctx.bezierCurveTo(3, -3, 0, 1, 0, 4);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function tick() {
+      if (!ctx) { raf = null; return; }
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        p.vy += 0.25;
+        p.vx *= 0.99;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vr;
+        heart(p.x, p.y, p.s, p.rot, p.color);
+      }
+      if (performance.now() < stopAt) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        raf = null;
+      }
+    }
+
+    function boom(cx, cy) {
+      if (!ctx || reduce) return;
+      parts = [];
+      for (var i = 0; i < 96; i++) {
+        var a = Math.random() * Math.PI * 2;
+        var sp = 4 + Math.random() * 9;
+        parts.push({
+          x: cx, y: cy,
+          vx: Math.cos(a) * sp,
+          vy: Math.sin(a) * sp - 6,
+          s: 10 + Math.random() * 14,
+          rot: Math.random() * 6,
+          vr: (Math.random() - 0.5) * 0.3,
+          color: palette[i % palette.length]
+        });
+      }
+      stopAt = performance.now() + 2700;
+      if (!raf) raf = requestAnimationFrame(tick);
+    }
+
+    function tap(el, fn) {
+      var lock = false;
+      function h(e) {
+        if (lock) return;
+        lock = true;
+        setTimeout(function () { lock = false; }, 500);
+        fn.call(el, e);
+      }
+      el.addEventListener("click", h);
+      el.addEventListener("pointerup", h);
+    }
+
+    // --- "Да" ---
+    tap(yes, function () {
+      var r = yes.getBoundingClientRect();
+      show(pick);
+      boom(r.left + r.width / 2, r.top + r.height / 2);
+    });
+
+    // --- выбор места ---
+    var picked = false;
+    var placeBtns = document.querySelectorAll("#places .place");
+    for (var b = 0; b < placeBtns.length; b++) {
+      tap(placeBtns[b], function () {
+        if (picked) return;
+        picked = true;
+        var label = this.textContent.trim();
+        doneTitle.textContent = label === "похавать"
+          ? "Идём хавать 🍜"
+          : "Значит, " + label;
+        show(done);
+        boom(window.innerWidth / 2, window.innerHeight / 2);
+        submitAnswer("ДА, пойдёт гулять 🐵 — " + label);
+      });
+    }
+
+    tap(reroll, function () {
+      picked = false;
+      show(pick);
+    });
+
+    tap(again, function () {
+      picked = false;
+      tries = 0;
+      gone = false;
+      no.hidden = false;
+      no.removeAttribute("style");
+      no.textContent = labels[0];
+      yes.style.setProperty("--s", 1);
+      show(ask);
+    });
+
+    // --- убегающая кнопка "Нет" ---
+    var labels = [
+      "Нет", "Нет?", "точно нет?", "подумай ещё",
+      "ты офигела?", "значит так?", "я же говорил, что ты абьюзер",
+      "кнопка сломалась", "только «Да» осталась"
+    ];
+    var tries = 0;
+    var gone = false;
+
+    function dodge(e) {
+      if (e) e.preventDefault();
+      if (gone) return;
+      tries++;
+
+      var last = tries >= labels.length - 1;
+      no.textContent = labels[Math.min(tries, labels.length - 1)];
+      yes.style.setProperty("--s", Math.min(1.9, 1 + tries * 0.12).toFixed(2));
+      no.style.setProperty("--s", Math.max(0.5, 1 - tries * 0.05).toFixed(2));
+
+      var pad = 14;
+      var w = no.offsetWidth;
+      var h = no.offsetHeight;
+      var x = Math.max(pad, Math.random() * (window.innerWidth - w - pad));
+      var y = Math.max(pad, Math.random() * (window.innerHeight - h - pad));
+
+      no.style.position = "fixed";
+      no.style.margin = "0";
+      no.style.left = x + "px";
+      no.style.top = y + "px";
+
+      if (last) {
+        gone = true;
+        setTimeout(function () {
+          no.style.transition = "opacity .4s ease, transform .4s ease";
+          no.style.opacity = "0";
+          no.style.transform = "scale(0.3)";
+          setTimeout(function () { no.hidden = true; }, 450);
+        }, 1100);
+      }
+    }
+
+    no.addEventListener("pointerenter", dodge);
+    no.addEventListener("pointerdown", dodge);
+    no.addEventListener("click", dodge);
+  })();
+</script>
+</body>
+</html>
